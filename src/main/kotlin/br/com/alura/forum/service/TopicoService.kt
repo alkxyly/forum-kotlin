@@ -1,55 +1,16 @@
 package br.com.alura.forum.service
 
-import br.com.alura.forum.model.Curso
+import br.com.alura.forum.dto.NovoTopicoDto
 import br.com.alura.forum.model.Topico
-import br.com.alura.forum.model.Usuario
 import org.springframework.stereotype.Service
-import java.util.*
+import kotlin.collections.ArrayList
 
 @Service
-class TopicoService(private var topicos: List<Topico>) {
+class TopicoService(
+    private var topicos: List<Topico> = ArrayList(),
+    private var cursoService: CursoService,
+    private var usuarioService: UsuarioService) {
 
-    init{
-        val topico1 = Topico(
-            id = 1,
-            titulo = "Duvida Kotlin",
-            mensagem = "Variaveis Kotlin",
-            curso = Curso(
-                id = 1,
-                nome = "Curso Kotlin",
-                categoria = "Programação"
-            ),
-            autor = Usuario(id = 1, nome = "Ana", email = "ana@gmail.com"),
-
-            )
-
-        val topico2 = Topico(
-            id = 2,
-            titulo = "Duvida Kotlin 2",
-            mensagem = "Variaveis Kotlin",
-            curso = Curso(
-                id = 1,
-                nome = "Curso Kotlin",
-                categoria = "Programação"
-            ),
-            autor = Usuario(id = 1, nome = "Ana", email = "ana@gmail.com"),
-
-            )
-
-        val topico3 = Topico(
-            id = 3,
-            titulo = "Duvida Kotlin 3",
-            mensagem = "Variaveis Kotlin",
-            curso = Curso(
-                id = 1,
-                nome = "Curso Kotlin",
-                categoria = "Programação"
-            ),
-            autor = Usuario(id = 1, nome = "Ana", email = "ana@gmail.com"),
-
-            )
-        topicos = Arrays.asList(topico1, topico2,topico3);
-    }
 
     fun listar(): List<Topico> {
         return topicos;
@@ -59,6 +20,17 @@ class TopicoService(private var topicos: List<Topico>) {
         return topicos.stream().filter { topico ->
             topico.id == id;
         }.findFirst().get()
+    }
+
+    fun cadastrar(dto: NovoTopicoDto){
+
+        topicos = topicos.plus(Topico(
+            id = topicos.size.toLong() + 1 ,
+            titulo = dto.titulo,
+            mensagem = dto.mensagem,
+            curso = cursoService.buscarPorid(dto.idCurso),
+            autor = usuarioService.buscarPorId(dto.idAutor)
+        ))
     }
 
 }
